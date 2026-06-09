@@ -1,0 +1,37 @@
+﻿[
+    {
+        "Name":  "registry",
+        "Id":  19680,
+        "Module":  "registry",
+        "Out":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\scenario_5_3\\registry.out.log",
+        "Err":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\scenario_5_3\\registry.err.log"
+    },
+    {
+        "Name":  "tax_agent_modified",
+        "Id":  4616,
+        "Module":  "tax_agent",
+        "Out":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\scenario_5_3\\tax_agent_modified.out.log",
+        "Err":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\scenario_5_3\\tax_agent_modified.err.log"
+    },
+    {
+        "Name":  "compliance_agent",
+        "Id":  7232,
+        "Module":  "compliance_agent",
+        "Out":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\scenario_5_3\\compliance_agent.out.log",
+        "Err":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\scenario_5_3\\compliance_agent.err.log"
+    },
+    {
+        "Name":  "law_agent",
+        "Id":  4940,
+        "Module":  "law_agent",
+        "Out":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\scenario_5_3\\law_agent.out.log",
+        "Err":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\scenario_5_3\\law_agent.err.log"
+    },
+    {
+        "Name":  "customer_agent",
+        "Id":  13416,
+        "Module":  "customer_agent",
+        "Out":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\scenario_5_3\\customer_agent.out.log",
+        "Err":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\scenario_5_3\\customer_agent.err.log"
+    }
+]

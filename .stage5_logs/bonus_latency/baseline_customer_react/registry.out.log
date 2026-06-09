@@ -1,0 +1,5 @@
+INFO:     127.0.0.1:53970 - "POST /register HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53969 - "POST /register HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54006 - "POST /register HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54024 - "POST /register HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54065 - "GET /agents HTTP/1.1" 200 OK

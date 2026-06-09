@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from uuid import uuid4
 
 from langchain_core.messages import HumanMessage
@@ -40,6 +41,32 @@ class CustomerAgentExecutor(AgentExecutor):
         await updater.start_work()
 
         try:
+            if os.getenv("CUSTOMER_DIRECT_DELEGATE", "0") == "1":
+                from common.a2a_client import delegate
+                from common.registry_client import discover
+
+                logger.info(
+                    "CustomerAgent direct delegation enabled | task=%s context=%s trace=%s depth=%d",
+                    task_id, context_id, trace_id, depth,
+                )
+                endpoint = await discover("legal_question")
+                answer = await delegate(
+                    endpoint=endpoint,
+                    question=question,
+                    context_id=context_id,
+                    trace_id=trace_id,
+                    depth=depth + 1,
+                )
+                if not answer:
+                    answer = "The Law Agent returned an empty response. Please try again."
+
+                await updater.add_artifact(
+                    parts=[Part(root=TextPart(text=answer))],
+                    name="legal_response",
+                )
+                await updater.complete()
+                return
+
             # Build a per-request graph so the tool closure captures this request's IDs
             graph = build_graph(
                 trace_id=trace_id,

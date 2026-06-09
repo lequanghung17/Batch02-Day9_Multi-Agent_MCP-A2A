@@ -209,9 +209,16 @@ def search_case_law(keywords: str) -> str:
 
 Thêm vào tools list và test với câu hỏi về breach of contract.
 
+<!-- Khi test, agent đã tự gọi đúng 2 tool:
+
+search_legal_database
+search_case_law -->
+
 **Bài Tập 3.2:** Debug agent reasoning
 
 Thêm `verbose=True` vào `create_react_agent()` để xem chi tiết quá trình suy nghĩ của agent.
+
+<!-- cho thấy chi tiết luồng agent: message đầu vào, tool calls, tool results, state updates và final answer. Nó không hiển thị “suy nghĩ nội bộ” riêng tư của model, nhưng đủ để quan sát ReAct loop: agent chọn tool nào, truyền args gì, nhận observation gì, rồi tổng hợp ra sao. -->
 
 ---
 
@@ -366,6 +373,99 @@ Trong logs, tìm `trace_id` và theo dõi request đi qua các agents. Vẽ sequ
 
 Sửa `tax_agent/graph.py`, thay đổi system prompt để agent trả lời ngắn gọn hơn. Restart tax agent và test lại.
 
+### Kết Quả Thực Hiện Bài 5.1 - 5.3
+
+**Thời điểm chạy:** 2026-06-09  
+**Môi trường:** Windows PowerShell, chạy service bằng `.venv\Scripts\python.exe` vì `start_all.sh` là shell script cho Linux/macOS.  
+**Thiết lập test:** dùng `OPENROUTER_MODEL=openai/gpt-4o-mini` và `OPENROUTER_MAX_TOKENS=64` để giảm chi phí khi test Stage 5.
+
+**Kết quả khởi động hệ thống:**
+
+Registry chạy ở port `10000` và nhận đủ đăng ký từ 4 agents:
+
+```text
+tax-agent        -> http://localhost:10102, tasks=["tax_question"]
+compliance-agent -> http://localhost:10103, tasks=["compliance_question"]
+law-agent        -> http://localhost:10101, tasks=["legal_question"]
+customer-agent   -> http://localhost:10100
+```
+
+Log được lưu tại:
+
+```text
+.stage5_logs/scenario_5_1_5_2/
+.stage5_logs/scenario_5_3/
+```
+
+**Bài 5.1 - Trace request flow:**
+
+Khi chạy `test_client.py`, client kết nối được tới Customer Agent:
+
+```text
+Connected to agent: Customer Agent v1.0.0
+```
+
+Nhưng request bị dừng ngay tại bước Customer Agent gọi LLM vì OpenRouter trả lỗi:
+
+```text
+Error code: 402 - Insufficient credits
+```
+
+Vì vậy flow thực tế quan sát được là:
+
+```text
+test_client
+  -> Customer Agent
+  -> OpenRouter LLM call
+  -> failed: 402 Insufficient credits
+```
+
+Flow đầy đủ kỳ vọng khi tài khoản có credit:
+
+```text
+test_client
+  -> Customer Agent :10100
+  -> Registry discover("legal_question") :10000
+  -> Law Agent :10101
+  -> Registry discover("tax_question") :10000
+  -> Tax Agent :10102
+  -> Registry discover("compliance_question") :10000
+  -> Compliance Agent :10103
+  -> Law Agent aggregate
+  -> Customer Agent
+  -> test_client
+```
+
+Ghi chú: trong lần chạy này chưa thấy `trace_id` đầy đủ đi xuyên qua các agent vì request fail trước khi Law Agent/Tax/Compliance được gọi. A2A response có `context_id` và `task_id`, ví dụ `context_id='8f8db2e1-c5ce-421c-9932-6c5ac17a29cc'`.
+
+**Bài 5.2 - Test dynamic discovery:**
+
+Đã dừng Tax Agent rồi chạy lại `test_client.py`.
+
+Kết quả Registry sau khi dừng Tax Agent vẫn còn list `tax-agent`. Điều này cho thấy Registry hiện là in-memory registry đơn giản, có đăng ký agent nhưng chưa có health check/deregister tự động.
+
+Request vẫn fail ở Customer Agent vì lỗi OpenRouter `402`, nên chưa đi tới bước Law Agent discover/call Tax Agent. Theo code trong `law_agent/graph.py`, nếu đã đi tới `call_tax` mà Tax Agent thật sự không reachable, lỗi sẽ được catch và trả về dạng:
+
+```text
+[Tax analysis unavailable: ...]
+```
+
+**Bài 5.3 - Modify Tax Agent behavior:**
+
+Đã sửa `tax_agent/graph.py`, thêm yêu cầu vào `TAX_SYSTEM_PROMPT`:
+
+```text
+Keep the answer concise: use at most 3 bullet points and stay under 120 words.
+```
+
+Sau khi restart hệ thống, Registry xác nhận `tax-agent` đã đăng ký lại thành công:
+
+```text
+tax-agent -> http://localhost:10102
+```
+
+Tuy nhiên, test end-to-end sau khi sửa prompt vẫn fail ở Customer Agent vì OpenRouter `402 Insufficient credits`, nên chưa verify được output Tax Agent đã ngắn hơn trong lần chạy này. Cần nạp credit OpenRouter hoặc dùng API key/model còn quota để kiểm tra kết quả trả lời sau khi sửa prompt.
+
 ---
 
 ## Phần 6: Tổng Kết & Mở Rộng (10 phút)
@@ -386,6 +486,61 @@ Sửa `tax_agent/graph.py`, thay đổi system prompt để agent trả lời ng
 2. Ưu điểm của A2A protocol so với gRPC hoặc REST thông thường?
 3. Làm thế nào để prevent infinite delegation loops trong A2A?
 4. Tại sao cần Registry service? Có thể hardcode URLs không?
+
+**Trả lời:**
+
+**1. Khi nào nên dùng single agent thay vì multi-agent?**
+
+Nên dùng single agent khi bài toán đơn giản, phạm vi hẹp, không cần nhiều chuyên gia riêng biệt và không cần xử lý song song.
+
+Ví dụ:
+- Chatbot pháp lý cơ bản
+- Agent tra cứu tài liệu nội bộ
+- Workflow chỉ cần gọi một vài tools
+- Prototype hoặc demo nhỏ
+
+Single agent dễ debug, dễ triển khai và ít overhead hơn multi-agent.
+
+**2. Ưu điểm của A2A protocol so với gRPC hoặc REST thông thường?**
+
+A2A phù hợp hơn cho giao tiếp giữa các agents vì nó chuẩn hóa cách agent mô tả năng lực, nhận task, trả message/artifact và xử lý trạng thái task.
+
+Ưu điểm chính:
+- Có Agent Card để agent tự mô tả capability
+- Hỗ trợ task, message, artifact theo mô hình agent-native
+- Dễ làm dynamic discovery qua Registry
+- Agent có thể được triển khai độc lập ở các service khác nhau
+- Phù hợp với hệ thống nhiều agents, mỗi agent có vai trò riêng
+
+REST/gRPC vẫn dùng được, nhưng thường phải tự thiết kế format request/response, discovery, task status và metadata.
+
+**3. Làm thế nào để prevent infinite delegation loops trong A2A?**
+
+Có thể dùng các cách sau:
+- Thêm `MAX_DELEGATION_DEPTH`, ví dụ giới hạn tối đa 3 lần delegate
+- Truyền `depth` trong metadata qua mỗi A2A call
+- Nếu `depth >= MAX_DELEGATION_DEPTH` thì agent không được delegate tiếp
+- Dùng `trace_id` hoặc `context_id` để phát hiện request lặp
+- Thiết kế routing rõ ràng, ví dụ Customer -> Law -> Specialist, không cho Specialist gọi ngược Customer/Law tùy tiện
+
+Trong repo này có pattern `MAX_DELEGATION_DEPTH = 3` để tránh vòng lặp vô hạn.
+
+**4. Tại sao cần Registry service? Có thể hardcode URLs không?**
+
+Registry service giúp các agents tìm nhau động theo capability/task, ví dụ:
+
+```text
+discover("tax_question") -> http://localhost:10102
+```
+
+Lợi ích:
+- Không cần hardcode endpoint trong code
+- Dễ thay đổi port, host hoặc scale service
+- Agent có thể tự register khi startup
+- Hệ thống linh hoạt hơn khi thêm/xóa agent
+- Phù hợp production hơn, nhất là khi deploy nhiều service
+
+Có thể hardcode URLs trong demo nhỏ, nhưng không nên trong hệ thống thực tế vì khó bảo trì, khó scale và dễ lỗi khi đổi hạ tầng.
 
 ### Bài Tập Nâng Cao (Tự Học)
 
@@ -428,5 +583,88 @@ Nếu gặp vấn đề:
 Sau khi chạy full Stage 5 (test_client.py) trả lời 2 câu hỏi:
 - Latency (Tổng thời gian trả lời 1 câu hỏi của hệ thống) là bao nhiêu giây?
 - Đề xuất phương án giảm latency và demo + show thời gian xử lý đã giảm được khi apply phương án?
+
+### Kết Quả Bài Tập Cộng Điểm
+
+**Thời điểm chạy:** 2026-06-09  
+**Câu hỏi test:** `If a company breaks a contract and avoids taxes, what are the legal and regulatory consequences?`  
+**Log:** `.stage5_logs/bonus_latency/`
+
+Lưu ý: tại thời điểm test, OpenRouter trả lỗi `402 Insufficient credits`, nên hệ thống chưa tạo được câu trả lời legal hoàn chỉnh. Vì vậy số đo dưới đây là latency từ lúc `test_client.py` gửi request đến lúc hệ thống trả lỗi. Kết quả vẫn hữu ích để so sánh overhead của tầng Customer Agent trước/sau tối ưu.
+
+**Baseline - Customer Agent dùng ReAct/LLM để quyết định delegate:**
+
+```text
+Scenario: baseline_customer_react
+Result: failed at Customer Agent LLM call
+Error: 402 Insufficient credits
+Elapsed seconds: 4.55
+```
+
+**Phương án giảm latency:**
+
+Customer Agent hiện dùng `create_react_agent` và một LLM call chỉ để quyết định gọi `delegate_to_legal_agent`. Trong prompt đã quy định:
+
+```text
+Always use the `delegate_to_legal_agent` tool for any substantive legal question.
+```
+
+Vì vậy có thể bỏ LLM hop ở Customer Agent và delegate trực tiếp sang Law Agent. Cách này giảm:
+- 1 lần gọi LLM ở Customer Agent
+- 1 vòng ReAct tool-call loop
+- token prompt/response ở tầng Customer Agent
+
+Đã thêm chế độ tối ưu bằng biến môi trường:
+
+```text
+CUSTOMER_DIRECT_DELEGATE=1
+```
+
+Khi bật biến này, `customer_agent/agent_executor.py` sẽ:
+
+```text
+Customer Agent
+  -> Registry discover("legal_question")
+  -> Law Agent qua A2A
+```
+
+thay vì:
+
+```text
+Customer Agent
+  -> Customer LLM/ReAct
+  -> delegate_to_legal_agent tool
+  -> Registry discover("legal_question")
+  -> Law Agent qua A2A
+```
+
+**Kết quả sau tối ưu:**
+
+```text
+Scenario: optimized_direct_delegate_fixed_parser
+Result: reached Law Agent, then failed at Law Agent LLM call
+Error: 402 Insufficient credits
+Elapsed seconds: 3.58
+```
+
+**So sánh:**
+
+| Case | Latency |
+|---|---:|
+| Baseline | 4.55 giây |
+| Sau tối ưu | 3.58 giây |
+| Giảm được | 0.97 giây |
+| Tỷ lệ giảm | khoảng 21.3% |
+
+**Kết luận:**
+
+Phương án direct delegation giúp giảm latency vì loại bỏ một LLM call ở Customer Agent. Khi tài khoản OpenRouter có đủ credit để chạy full response, kỳ vọng mức giảm còn rõ hơn vì baseline phải chờ Customer LLM hoàn tất tool decision trước khi Law Agent bắt đầu xử lý.
+
+Các hướng tối ưu tiếp theo:
+- Cache kết quả Registry discovery để giảm HTTP call tới `/discover`
+- Giảm `max_tokens` cho các agent trung gian
+- Dùng model nhỏ/rẻ hơn cho routing, model mạnh hơn cho bước aggregate cuối
+- Chạy Tax Agent và Compliance Agent song song như hiện tại, tránh thêm dependency tuần tự
+- Thêm timeout/retry có kiểm soát để tránh chờ lâu khi một specialist agent lỗi
 
 **Chúc các bạn học tốt! 🚀**

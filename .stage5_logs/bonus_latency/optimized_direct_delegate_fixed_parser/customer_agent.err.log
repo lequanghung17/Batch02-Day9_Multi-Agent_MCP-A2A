@@ -1,0 +1,14 @@
+2026-06-09 16:57:53,413 [customer_agent] INFO HTTP Request: POST http://localhost:10000/register "HTTP/1.1 200 OK"
+2026-06-09 16:57:53,421 [customer_agent] INFO Registered with registry (attempt 1)
+2026-06-09 16:57:53,423 [customer_agent] INFO Customer Agent listening on port 10100
+INFO:     Started server process [7016]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:10100 (Press CTRL+C to quit)
+2026-06-09 16:57:59,523 [customer_agent] WARNING Deprecated agent card endpoint '/.well-known/agent.json' accessed. Please use '/.well-known/agent-card.json' instead. This endpoint will be removed in a future version.
+2026-06-09 16:57:59,854 [customer_agent] INFO CustomerAgent executing | task=c71b64f7-777b-4eac-90b2-f8b083f8d855 context=2c1b4667-2752-42d3-98ac-9891a820e2c2 trace=c8bcb96a-7aec-465a-ac4b-c505fa591e02 depth=0
+2026-06-09 16:57:59,893 [customer_agent] INFO CustomerAgent direct delegation enabled | task=c71b64f7-777b-4eac-90b2-f8b083f8d855 context=2c1b4667-2752-42d3-98ac-9891a820e2c2 trace=c8bcb96a-7aec-465a-ac4b-c505fa591e02 depth=0
+2026-06-09 16:57:59,913 [customer_agent] INFO Task not found or task_id not set. Creating new task for event (task_id: c71b64f7-777b-4eac-90b2-f8b083f8d855, context_id: 2c1b4667-2752-42d3-98ac-9891a820e2c2).
+2026-06-09 16:58:00,204 [customer_agent] INFO HTTP Request: GET http://localhost:10000/discover/legal_question "HTTP/1.1 200 OK"
+2026-06-09 16:58:00,513 [customer_agent] INFO HTTP Request: GET http://localhost:10101/.well-known/agent.json "HTTP/1.1 200 OK"
+2026-06-09 16:58:02,336 [customer_agent] INFO HTTP Request: POST http://localhost:10101 "HTTP/1.1 200 OK"

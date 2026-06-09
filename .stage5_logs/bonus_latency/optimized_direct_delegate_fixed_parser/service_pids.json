@@ -1,0 +1,37 @@
+﻿[
+    {
+        "Name":  "registry",
+        "Id":  17936,
+        "Module":  "registry",
+        "Out":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\bonus_latency\\optimized_direct_delegate_fixed_parser\\registry.out.log",
+        "Err":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\bonus_latency\\optimized_direct_delegate_fixed_parser\\registry.err.log"
+    },
+    {
+        "Name":  "tax_agent",
+        "Id":  20972,
+        "Module":  "tax_agent",
+        "Out":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\bonus_latency\\optimized_direct_delegate_fixed_parser\\tax_agent.out.log",
+        "Err":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\bonus_latency\\optimized_direct_delegate_fixed_parser\\tax_agent.err.log"
+    },
+    {
+        "Name":  "compliance_agent",
+        "Id":  19772,
+        "Module":  "compliance_agent",
+        "Out":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\bonus_latency\\optimized_direct_delegate_fixed_parser\\compliance_agent.out.log",
+        "Err":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\bonus_latency\\optimized_direct_delegate_fixed_parser\\compliance_agent.err.log"
+    },
+    {
+        "Name":  "law_agent",
+        "Id":  21572,
+        "Module":  "law_agent",
+        "Out":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\bonus_latency\\optimized_direct_delegate_fixed_parser\\law_agent.out.log",
+        "Err":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\bonus_latency\\optimized_direct_delegate_fixed_parser\\law_agent.err.log"
+    },
+    {
+        "Name":  "customer_agent",
+        "Id":  7196,
+        "Module":  "customer_agent",
+        "Out":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\bonus_latency\\optimized_direct_delegate_fixed_parser\\customer_agent.out.log",
+        "Err":  "C:\\Users\\PC\\Downloads\\Batch02-Day9_Multi-Agent_MCP-A2A\\.stage5_logs\\bonus_latency\\optimized_direct_delegate_fixed_parser\\customer_agent.err.log"
+    }
+]

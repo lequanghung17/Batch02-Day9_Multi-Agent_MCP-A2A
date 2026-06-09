@@ -111,6 +111,15 @@ def _extract_text(response: object) -> str:
         for part in parts:
             text += _part_text(part)
 
+    # Failed or in-progress Task status may carry the useful agent message.
+    if not text:
+        status = getattr(result, "status", None)
+        status_message = getattr(status, "message", None)
+        if status_message is not None:
+            msg_parts = getattr(status_message, "parts", []) or []
+            for part in msg_parts:
+                text += _part_text(part)
+
     # Task history messages as fallback
     if not text:
         history = getattr(result, "history", None)

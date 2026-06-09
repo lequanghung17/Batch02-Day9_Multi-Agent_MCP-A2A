@@ -1,0 +1,69 @@
+2026-06-09 16:01:05,981 [customer_agent] INFO HTTP Request: POST http://localhost:10000/register "HTTP/1.1 200 OK"
+2026-06-09 16:01:05,983 [customer_agent] INFO Registered with registry (attempt 1)
+2026-06-09 16:01:05,987 [customer_agent] INFO Customer Agent listening on port 10100
+INFO:     Started server process [16104]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:10100 (Press CTRL+C to quit)
+2026-06-09 16:01:10,924 [customer_agent] WARNING Deprecated agent card endpoint '/.well-known/agent.json' accessed. Please use '/.well-known/agent-card.json' instead. This endpoint will be removed in a future version.
+2026-06-09 16:01:11,224 [customer_agent] INFO CustomerAgent executing | task=9f442760-5fed-4ab3-a8f7-dd751e0a9f93 context=c3f19181-d696-4566-9f70-f0cc278de95b trace=fa14eebb-7c88-4b11-8c2b-7ac3bc6c98da depth=0
+2026-06-09 16:01:12,688 [customer_agent] INFO Task not found or task_id not set. Creating new task for event (task_id: 9f442760-5fed-4ab3-a8f7-dd751e0a9f93, context_id: c3f19181-d696-4566-9f70-f0cc278de95b).
+2026-06-09 16:01:13,464 [customer_agent] INFO HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 402 Payment Required"
+2026-06-09 16:01:13,470 [customer_agent] ERROR CustomerAgent execution error: Error code: 402 - {'error': {'message': 'Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more at https://openrouter.ai/settings/credits', 'code': 402}}
+Traceback (most recent call last):
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\customer_agent\agent_executor.py", line 50, in execute
+    result = await graph.ainvoke(
+             ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langgraph\pregel\main.py", line 4057, in ainvoke
+    async for chunk in self.astream(
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langgraph\pregel\main.py", line 3407, in astream
+    async for _ in runner.atick(
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langgraph\pregel\_runner.py", line 396, in atick
+    await arun_with_retry(
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langgraph\pregel\_retry.py", line 706, in arun_with_retry
+    return await task.proc.ainvoke(task.input, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langgraph\_internal\_runnable.py", line 733, in ainvoke
+    input = await asyncio.create_task(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langgraph\_internal\_runnable.py", line 492, in ainvoke
+    ret = await asyncio.create_task(coro, context=context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langgraph\prebuilt\chat_agent_executor.py", line 707, in acall_model
+    response = cast(AIMessage, await static_model.ainvoke(model_input, config))  # type: ignore[union-attr]
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 3375, in ainvoke
+    input_ = await coro_with_context(part(), context, create_task=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langchain_core\runnables\base.py", line 5894, in ainvoke
+    return await self.bound.ainvoke(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 497, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1834, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 1792, in agenerate
+    raise exceptions[0]
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langchain_core\language_models\chat_models.py", line 2127, in _agenerate_with_cache
+    result = await self._agenerate(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langchain_openai\chat_models\base.py", line 1925, in _agenerate
+    _handle_openai_api_error(e)
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\langchain_openai\chat_models\base.py", line 1918, in _agenerate
+    raw_response = await self.async_client.with_raw_response.create(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\openai\_legacy_response.py", line 384, in wrapped
+    return cast(LegacyAPIResponse[R], await func(*args, **kwargs))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\openai\resources\chat\completions\completions.py", line 2739, in create
+    return await self._post(
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\openai\_base_client.py", line 1931, in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\Downloads\Batch02-Day9_Multi-Agent_MCP-A2A\.venv\Lib\site-packages\openai\_base_client.py", line 1716, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.APIStatusError: Error code: 402 - {'error': {'message': 'Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more at https://openrouter.ai/settings/credits', 'code': 402}}
+During task with name 'agent' and id 'ca54279a-19f2-4c83-c7ea-c92ffd79a3ce'
